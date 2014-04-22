@@ -1,6 +1,6 @@
 # Mina::Slack
 
-TODO: Write a gem description
+Announce Mina deployments to a slack channel.
 
 ## Installation
 
