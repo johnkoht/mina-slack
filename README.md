@@ -33,6 +33,7 @@ You'll need to setup your slack details with an API key, room and subdomain. You
     set :slack_subdomain, 'slack_subdomain'
 
 Or use the ENV variables:
+
     ENV['SLACK_TOKEN'] = '' 
     ENV['SLACK_ROOM'] = ''
     ENV['SLACK_SUBDOMAIN'] = ''
