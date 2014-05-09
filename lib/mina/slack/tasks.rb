@@ -18,7 +18,7 @@ namespace :slack do
   task :starting do
     if slack_token and slack_room and slack_subdomain
       announced_stage = ENV['to'] || 'production'
-      announcement = "#{deployer} is deploying #{app}'s #{branch} to #{announced_stage}"
+      announcement = "#{deployer} is deploying #{app}'s #{branch} branch to #{announced_stage}"
 
       # Parse the API url and create an SSL connection
       uri = URI.parse("https://#{slack_subdomain}.slack.com/services/hooks/incoming-webhook?token=#{slack_token}")
@@ -42,7 +42,7 @@ namespace :slack do
   task :finished do
     if slack_token and slack_room and slack_subdomain
       announced_stage = ENV['to'] || 'production'
-      announcement = "#{deployer} successfully deployed #{app} to #{announced_stage}!"
+      announcement = "#{deployer} successfully deployed #{app}'s #{branch} branch to #{announced_stage}!"
 
       # Parse the URI and handle the https connection
       uri = URI.parse("https://#{slack_subdomain}.slack.com/services/hooks/incoming-webhook?token=#{slack_token}")
