@@ -1,6 +1,11 @@
-set :deployer, ENV['GIT_AUTHOR_NAME'] || `git config user.name`.chomp
-set :announced_stage, ENV['to'] || 'production'
-
-set :slack_token, ENV['SLACK_TOKEN']
-set :slack_room, ENV['SLACK_ROOM']
-set :slack_subdomain, ENV['SLACK_SUBDOMAIN']
+# Required
+set :slack_url,       -> { ENV['SLACK_URL'] }
+set :slack_room,        -> { ENV['SLACK_ROOM'] }
+# Optional
+set :slack_stage,       -> { ENV['SLACK_STAGE'] || ENV['to'] || fetch(:rails_env, 'production') }
+set :slack_application, -> { ENV['SLACK_APPLICATION'] || application }
+set :slack_username,    -> { ENV['SLACK_USERNAME'] || 'deploybot' }
+set :slack_emoji,       -> { ENV['SLACK_EMOJI'] || ':cloud:' }
+# Git
+set :deployer,          -> { ENV['GIT_AUTHOR_NAME'] || %x[git config user.name].chomp }
+set :deployed_revision, -> { ENV['GIT_COMMIT'] || %x[git rev-parse #{fetch(:branch)}].strip }
