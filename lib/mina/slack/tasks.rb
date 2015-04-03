@@ -39,7 +39,7 @@ namespace :slack do
 
 
   def announced_stage
-    ENV['to'] || rails_env || 'production'
+    slack_stage
   end
 
   def announced_deployer
