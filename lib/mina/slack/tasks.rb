@@ -53,8 +53,8 @@ namespace :slack do
   def announced_application_name
     "".tap do |output|
       output << slack_application if slack_application
-      output << " #{branch}" if branch
-      output << " (#{short_revision})" if short_revision
+      output << " `#{branch}`" if branch
+      output << " (`#{short_revision}`)" if short_revision
     end
   end
 
