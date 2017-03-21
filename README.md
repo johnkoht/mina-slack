@@ -28,13 +28,14 @@ Include the recipe in your deploy.rb
 You'll need to setup your slack details with an API key, room and subdomain. You can add these as ENV variables or in the config/deploy.rb
 
     # required
-    set :slack_url, "https://hooks.slack.com/services/<YOUR-STRING1>/<YOUR-STRING2>" # comes from inbound webhook integration
-    set :slack_room, "#general" # the room to send the message to
+    set :slack_url, 'https://hooks.slack.com/services/<YOUR-STRING1>/<YOUR-STRING2>' # comes from inbound webhook integration
+    set :slack_room, '#general' # the room to send the message to
 
     # optional
-    set :slack_application, "Application Name" # override Capistrano `application`
-    set :slack_username, "Deploy Bot" # displayed as name of message sender
-    set :slack_emoji, ":cloud:" # will be used as the avatar for the message
+    set :slack_application, 'Application Name' # override Capistrano `application`
+    set :slack_username, 'Deploy Bot' # displayed as name of message sender
+    set :slack_emoji, ':cloud:' # will be used as the avatar for the message
+    set :slack_stage, 'staging' # will be used to specify the deployment environment
 
 Or use the ENV variables:
 
@@ -46,6 +47,7 @@ Or use the ENV variables:
     ENV['SLACK_APPLICATION'] = ''
     ENV['SLACK_USERNAME'] = ''
     ENV['SLACK_EMOJI'] = ''
+    ENV['SLACK_STAGE'] = '' # or ENV['to']
 
 ## Contributing
 
