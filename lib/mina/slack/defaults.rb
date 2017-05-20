@@ -9,3 +9,5 @@ set_default :slack_emoji,       -> { ENV['SLACK_EMOJI'] || ':cloud:' }
 # Git
 set_default :deployer,          -> { ENV['GIT_AUTHOR_NAME'] || %x[git config user.name].chomp }
 set_default :deployed_revision, -> { ENV['GIT_COMMIT'] || %x[git rev-parse #{branch}].strip }
+# Server deploy
+set_default :deploy_url,       -> { fetch(:domain, 'http://example.com')}
