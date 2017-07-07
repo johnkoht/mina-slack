@@ -13,30 +13,38 @@ after_mina :deploy, :'slack:finished'
 namespace :slack do
 
   task :starting do
-    if slack_url and slack_room
-      announcement = "#{announced_deployer} is deploying #{announced_application_name} to #{announced_stage}"
-
-      post_slack_message(announcement)
-      set(:start_time, Time.now)
-    else
-      print_local_status "Unable to create Slack Announcement, no slack details provided."
-    end
+    set(:start_time, Time.now)
+    set(:last_revision, get_last_revision(last_revision_file))
+    print_local_status "Unable to create Slack Announcement, no slack details provided."
   end
 
   task :finished do
     if slack_url and slack_room
-      end_time = Time.now
-      start_time = fetch(:start_time)
-      elapsed = end_time.to_i - start_time.to_i
 
-      announcement = "#{announced_deployer} successfully deployed #{announced_application_name} in #{elapsed} seconds."
+      attachment = {
+        fallback: "Required plain-text summary of the attachment.",
+        color: "#36a64f",
+        fields: [attachment_project, attachment_enviroment, attachment_deployer, attachment_revision, attachment_changes]
+      }
 
-      post_slack_message(announcement)
+      post_slack_attachment(attachment)
     else
       print_local_status "Unable to create Slack Announcement, no slack details provided."
     end
   end
 
+  def last_revision_file
+    "#{deploy_to}/scm/FETCH_HEAD"
+  end
+
+  def get_last_revision(file_name)
+    if File.exists?(file_name)
+      lines = File.readlines(file_name).reject(&:empty?)
+      lines.map do |line|
+        return line.split.first
+      end
+    end
+  end
 
   def announced_stage
     slack_stage
@@ -56,6 +64,29 @@ namespace :slack do
       output << " `#{branch}`" if branch
       output << " (`#{short_revision}`)" if short_revision
     end
+  end
+
+  def attachment_project
+    {title: "New version of project", value: application_name, short: true}
+  end
+
+  def attachment_enviroment
+    {title: "Environment", value: slack_stage, short: true}
+  end
+
+  def attachment_deployer
+    {title: "Deployer", value: deployer, short: true}
+  end
+
+  def attachment_revision
+    {title: "Revision", value: "#{application_name}: #{slack_stage} #{short_revision}", short: true}
+  end
+
+  def attachment_changes
+    {title: "Changes", value: changes, short: false}
+  end
+
+  def create_attachment
   end
 
   def post_slack_message(message)
@@ -78,6 +109,26 @@ namespace :slack do
     request.set_form_data(:payload => payload.to_json)
 
     # Make the actual request to the API
+    http.request(request)
+  end
+
+  def post_slack_attachment(attachment)
+    uri = URI.parse(slack_url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+    payload = {
+      "parse"       => "full",
+      "channel"     => slack_room,
+      "username"    => slack_username,
+      "attachments" => [attachment],
+      "icon_emoji"  => slack_emoji
+    }
+
+    request = Net::HTTP::Post.new(uri.request_uri)
+    request.set_form_data(:payload => payload.to_json)
+
     http.request(request)
   end
 end

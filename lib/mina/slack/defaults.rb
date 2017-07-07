@@ -9,3 +9,5 @@ set_default :slack_emoji,       -> { ENV['SLACK_EMOJI'] || ':cloud:' }
 # Git
 set_default :deployer,          -> { ENV['GIT_AUTHOR_NAME'] || %x[git config user.name].chomp }
 set_default :deployed_revision, -> { ENV['GIT_COMMIT'] || %x[git rev-parse #{branch}].strip }
+
+set_default :changes,           -> { ENV['CHANGES'] || %x[git rev-list --pretty=format:'%an (%ad) - %s%n' --date=format:'%d-%m-%Y' --abbrev-commit  #{last_revision}..#{deployed_revision}]}
