@@ -13,9 +13,12 @@ after_mina :deploy, :'slack:finished'
 namespace :slack do
 
   task :starting do
-    set(:start_time, Time.now)
-    set(:last_revision, get_last_revision(last_revision_file))
-    print_local_status "Unable to create Slack Announcement, no slack details provided."
+    if slack_url and slack_room
+      set(:start_time, Time.now)
+      set(:last_revision, get_last_revision(last_revision_file))
+    else
+      print_local_status "Unable to create Slack Announcement, no slack details provided."
+    end
   end
 
   task :finished do
