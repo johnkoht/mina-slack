@@ -69,17 +69,17 @@ namespace :slack do
   end
 
   def post_slack_attachment(attachment)
-    uri = URI.parse(slack_url)
+    uri = URI.parse(fetch(:slack_url))
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     payload = {
       "parse"       => "full",
-      "channel"     => slack_room,
-      "username"    => slack_username,
+      "channel"     => fetch(:slack_room),
+      "username"    => fetch(:slack_username),
       "attachments" => [attachment],
-      "icon_emoji"  => slack_emoji
+      "icon_emoji"  => fetch(:slack_emoji)
     }
 
     request = Net::HTTP::Post.new(uri.request_uri)
