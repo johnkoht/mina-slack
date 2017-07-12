@@ -1,83 +1,90 @@
-require 'mina/hooks'
-
 require 'json'
 require 'net/http'
-
-
-# Before and after hooks for mina deploy
-before_mina :deploy, :'slack:starting'
-after_mina :deploy, :'slack:finished'
+require 'openssl'
 
 
 # Slack tasks
 namespace :slack do
 
   task :starting do
-    if slack_url and slack_room
-      announcement = "#{announced_deployer} is deploying #{announced_application_name} to #{announced_stage}"
-
-      post_slack_message(announcement)
+    if fetch(:slack_url) and fetch(:slack_room)
       set(:start_time, Time.now)
+      set(:last_revision, get_last_revision(last_revision_file))
     else
       print_local_status "Unable to create Slack Announcement, no slack details provided."
     end
   end
 
   task :finished do
-    if slack_url and slack_room
-      end_time = Time.now
-      start_time = fetch(:start_time)
-      elapsed = end_time.to_i - start_time.to_i
+    if fetch(:slack_url) and fetch(:slack_room)
 
-      announcement = "#{announced_deployer} successfully deployed #{announced_application_name} in #{elapsed} seconds."
+      attachment = {
+        fallback: "Required plain-text summary of the attachment.",
+        color: "#36a64f",
+        fields: [attachment_project, attachment_enviroment, attachment_deployer, attachment_revision, attachment_changes]
+      }
 
-      post_slack_message(announcement)
+      post_slack_attachment(attachment)
     else
       print_local_status "Unable to create Slack Announcement, no slack details provided."
     end
   end
 
-
-  def announced_stage
-    slack_stage
+  def last_revision_file
+    "#{fetch(:deploy_to)}/scm/FETCH_HEAD"
   end
 
-  def announced_deployer
-    deployer
-  end
-
-  def short_revision
-    deployed_revision[0..7] if deployed_revision
-  end
-
-  def announced_application_name
-    "".tap do |output|
-      output << slack_application if slack_application
-      output << " `#{branch}`" if branch
-      output << " (`#{short_revision}`)" if short_revision
+  def get_last_revision(file_name)
+    if File.exists?(file_name)
+      lines = File.readlines(file_name).reject(&:empty?)
+      lines.map do |line|
+        return line.split.first
+      end
     end
   end
 
-  def post_slack_message(message)
-    # Parse the URI and handle the https connection
-    uri = URI.parse(slack_url)
+  def short_revision
+    deployed_revision = fetch(:deployed_revision)
+    deployed_revision[0..7] if deployed_revision
+  end
+
+  def attachment_project
+    {title: "New version of project", value: fetch(:application_name), short: true}
+  end
+
+  def attachment_enviroment
+    {title: "Environment", value: fetch(:slack_stage), short: true}
+  end
+
+  def attachment_deployer
+    {title: "Deployer", value: fetch(:deployer), short: true}
+  end
+
+  def attachment_revision
+    {title: "Revision", value: "#{fetch(:application_name)}: #{fetch(:slack_stage)} #{short_revision}", short: true}
+  end
+
+  def attachment_changes
+    {title: "Changes", value: fetch(:changes), short: false}
+  end
+
+  def post_slack_attachment(attachment)
+    uri = URI.parse(fetch(:slack_url))
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     payload = {
       "parse"       => "full",
-      "channel"     => slack_room,
-      "username"    => slack_username,
-      "text"        => message,
-      "icon_emoji"  => slack_emoji
+      "channel"     => fetch(:slack_room),
+      "username"    => fetch(:slack_username),
+      "attachments" => [attachment],
+      "icon_emoji"  => fetch(:slack_emoji)
     }
 
-    # Create the post request and setup the form data
     request = Net::HTTP::Post.new(uri.request_uri)
     request.set_form_data(:payload => payload.to_json)
 
-    # Make the actual request to the API
     http.request(request)
   end
 end

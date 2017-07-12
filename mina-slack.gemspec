@@ -22,6 +22,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rake"
 
   spec.add_dependency "mina"
-  spec.add_dependency "mina-hooks"
 
 end
