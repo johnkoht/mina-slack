@@ -9,5 +9,4 @@ set :slack_emoji,       -> { ENV['SLACK_EMOJI'] || ':cloud:' }
 # Git
 set :deployer,          -> { ENV['GIT_AUTHOR_NAME'] || %x[git config user.name].chomp }
 set :deployed_revision, -> { ENV['GIT_COMMIT'] || %x[git rev-parse #{fetch(:branch)}].strip }
-
-set :changes,           -> { ENV['CHANGES'] || %x[git rev-list --pretty=format:'%an (%ad) - %s%n' --date=format:'%d-%m-%Y' --abbrev-commit  #{fetch(:last_revision)}..#{fetch(:deployed_revision)}]}
+set :changes,           -> { ENV['CHANGES'] || %x[git log --date=short #{fetch(:last_revision)} #{fetch(:deployed_revision)}] }
