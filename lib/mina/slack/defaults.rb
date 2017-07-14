@@ -7,7 +7,7 @@ set :slack_application, -> { ENV['SLACK_APPLICATION'] || application }
 set :slack_username,    -> { ENV['SLACK_USERNAME'] || 'deploybot' }
 set :slack_emoji,       -> { ENV['SLACK_EMOJI'] || ':cloud:' }
 # Git
-set :last_revision, -> { ENV['LAST_REVISION'] || %x[ cd #{fetch(:deploy_to)}/scm; git rev-parse --verify HEAD].strip}
+set :last_revision, -> { ENV['LAST_REVISION'] || %x[ ssh #{fetch(:domain)}; cd #{fetch(:deploy_to)}/scm; git rev-parse --verify HEAD].strip}
 set :deployer,          -> { ENV['GIT_AUTHOR_NAME'] || %x[git config user.name].chomp }
 set :deployed_revision, -> { ENV['GIT_COMMIT'] || %x[git rev-parse #{fetch(:branch)}].strip }
 set :changes,           -> { ENV['CHANGES'] || changes }
