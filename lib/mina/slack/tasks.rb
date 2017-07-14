@@ -6,15 +6,6 @@ require 'openssl'
 # Slack tasks
 namespace :slack do
 
-  task :starting do
-    if fetch(:slack_url) and fetch(:slack_room)
-      set(:start_time, Time.now)
-      set(:last_revision, get_last_revision(last_revision_file))
-    else
-      print_local_status "Unable to create Slack Announcement, no slack details provided."
-    end
-  end
-
   task :finished do
     if fetch(:slack_url) and fetch(:slack_room)
 
@@ -27,19 +18,6 @@ namespace :slack do
       post_slack_attachment(attachment)
     else
       print_local_status "Unable to create Slack Announcement, no slack details provided."
-    end
-  end
-
-  def last_revision_file
-    "#{fetch(:deploy_to)}/scm/FETCH_HEAD"
-  end
-
-  def get_last_revision(file_name)
-    if File.exists?(file_name)
-      lines = File.readlines(file_name).reject(&:empty?)
-      lines.map do |line|
-        return line.split.first
-      end
     end
   end
 
