@@ -16,6 +16,7 @@ def changes
   if fetch(:last_revision).nil?
     %x[git log --date=short #{fetch(:deployed_revision)}]
   else
-    %x[git log --date=short #{fetch(:last_revision)}..#{fetch(:deployed_revision)}]
+    command = "git log --date=short #{fetch(:last_revision).delete("\n")}..#{fetch(:deployed_revision)}"
+    %x[ #{command}]
   end
 end
