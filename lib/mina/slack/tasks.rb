@@ -70,7 +70,7 @@ namespace :slack do
 
   def changes
     last_revision = fetch(:last_revision)
-    if last_revision.blank?
+    if last_revision.empty?
       %x[git log --date=short #{fetch(:deployed_revision)}]
     else
       %x[git log --date=short #{fetch(:last_revision)}..#{fetch(:deployed_revision)}]
