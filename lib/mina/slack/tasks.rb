@@ -6,13 +6,9 @@ require 'openssl'
 # Slack tasks
 namespace :slack do
 
-  task :starting do
-    set(:last_revision, %x[cat #{fetch(:current_path)}/.mina_git_revision].delete("\n"))
-  end
-
   task :finished do
     if fetch(:slack_url) and fetch(:slack_room)
-
+      set(:last_revision, %x[ssh -l leinhauplk -p 22 localhost cat #{fetch(:current_path)}/.mina_git_revision].delete("\n"))
       attachment = {
         fallback: "Required plain-text summary of the attachment.",
         color: "#36a64f",

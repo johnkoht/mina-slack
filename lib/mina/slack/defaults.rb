@@ -11,7 +11,6 @@ set :deployer,          -> { ENV['GIT_AUTHOR_NAME'] || %x[git config user.name].
 set :deployed_revision, -> { ENV['GIT_COMMIT'] || %x[git rev-parse #{fetch(:branch)}].strip }
 set :changes,           -> { ENV['CHANGES'] || changes }
 
-
 def changes
   if fetch(:last_revision).nil?
     %x[git log --date=short #{fetch(:deployed_revision)}]
