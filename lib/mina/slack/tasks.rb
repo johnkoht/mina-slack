@@ -8,7 +8,8 @@ namespace :slack do
 
   task :finished do
     if fetch(:slack_url) and fetch(:slack_room)
-      set(:last_revision, %x[ssh -l leinhauplk -p 22 localhost cat #{fetch(:current_path)}/.mina_git_revision].delete("\n"))
+      domain = fetch(:domain)
+      set(:last_revision, %x[ssh #{domain} cat #{fetch(:current_path)}/.mina_git_revision].delete("\n"))
       attachment = {
         fallback: "Required plain-text summary of the attachment.",
         color: "#36a64f",
