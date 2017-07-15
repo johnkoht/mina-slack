@@ -6,7 +6,7 @@ require 'openssl'
 # Slack tasks
 namespace :slack do
 
-  task :finished do
+  task :post_info do
     if fetch(:slack_url) and fetch(:slack_room)
       ssh_fetch_command = %x[ssh #{fetch(:domain)} cat #{fetch(:current_path)}/.mina_git_revision]
       set(:last_revision, ssh_fetch_command.delete("\n"))
@@ -45,7 +45,7 @@ namespace :slack do
   end
 
   def attachment_changes
-    {title: "Changes", value: fetch(:changes), short: false}
+    {title: "Changes", value: changes, short: false}
   end
 
   def post_slack_attachment(attachment)
@@ -66,5 +66,14 @@ namespace :slack do
     request.set_form_data(:payload => payload.to_json)
 
     http.request(request)
+  end
+
+  def changes
+    last_revision = fetch(:last_revision)
+    if last_revision.blank?
+      %x[git log --date=short #{fetch(:deployed_revision)}]
+    else
+      %x[git log --date=short #{fetch(:last_revision)}..#{fetch(:deployed_revision)}]
+    end
   end
 end
