@@ -8,8 +8,9 @@ namespace :slack do
 
   task :finished do
     if fetch(:slack_url) and fetch(:slack_room)
-      domain = fetch(:domain)
-      set(:last_revision, %x[ssh #{domain} cat #{fetch(:current_path)}/.mina_git_revision].delete("\n"))
+      ssh_fetch_command = %x[ssh #{fetch(:domain)} cat #{fetch(:current_path)}/.mina_git_revision]
+      set(:last_revision, ssh_fetch_command.delete("\n"))
+      print_status "Last commit #{fetch(:last_revision)}"
       attachment = {
         fallback: "Required plain-text summary of the attachment.",
         color: "#36a64f",
@@ -18,7 +19,7 @@ namespace :slack do
 
       post_slack_attachment(attachment)
     else
-      print_local_status "Unable to create Slack Announcement, no slack details provided."
+      print_status "Unable to create Slack Announcement, no slack details provided."
     end
   end
 
