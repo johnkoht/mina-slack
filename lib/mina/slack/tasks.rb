@@ -10,9 +10,8 @@ namespace :slack do
     if fetch(:slack_url) and fetch(:slack_room)
       ssh_fetch_command = %x[ssh #{fetch(:domain)} cat #{fetch(:current_path)}/.mina_git_revision]
       set(:last_revision, ssh_fetch_command.delete("\n"))
-      print_status "Last commit #{fetch(:last_revision)}"
+      set(:last_commit, %x[git log -n 1 --pretty=format:"%H"])
       changes
-      print_status fetch(:changes)
       attachment = {
         fallback: "Required plain-text summary of the attachment.",
         color: "#36a64f",
@@ -73,9 +72,9 @@ namespace :slack do
   def changes
     last_revision = fetch(:last_revision)
     if last_revision.empty?
-      set(:changes, %x[git log --pretty=format:'%an (%ad) - %s%n' --date=short --abbrev-commit #{fetch(:deployed_revision)}])
+      set(:changes, %x[git --no-pager log --pretty=format:'%an (%ad) - %s%n' --date=short --abbrev-commit #{fetch(:deployed_revision)}])
     else
-      set(:changes, %x[git rev-list --pretty=format:'%an (%ad) - %s%n' --date=short --abbrev-commit #{fetch(:last_revision)}...#{fetch(:deployed_revision)}])
+      set(:changes, %x[git --no-pager rev-list --pretty=format:'%an (%ad) - %s%n' --date=short --abbrev-commit #{fetch(:last_revision)}...#{fetch(:last_commit)}])
     end
   end
 end
