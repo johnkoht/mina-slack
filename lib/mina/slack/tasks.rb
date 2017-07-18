@@ -72,9 +72,9 @@ namespace :slack do
   def changes
     last_revision = fetch(:last_revision)
     if last_revision.empty?
-      set(:changes, %x[git --no-pager log --pretty=format:'%an (%ad) - %s%n' --date=short --abbrev-commit #{fetch(:deployed_revision)}])
+      set(:changes, %x[git --no-pager log --pretty=format:'Commit: %h - %ad%n%an - %s%n' --date=short --abbrev-commit #{fetch(:deployed_revision)}])
     else
-      set(:changes, %x[git --no-pager rev-list --pretty=format:'%an (%ad) - %s%n' --date=short --abbrev-commit #{fetch(:last_revision)}...#{fetch(:last_commit)}])
+      set(:changes, %x[git --no-pager log --pretty=format:'Commit: %h - %ad%n%an - %s%n' --date=short --abbrev-commit #{fetch(:last_revision)}...#{fetch(:last_commit)}])
     end
   end
 end
