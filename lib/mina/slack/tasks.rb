@@ -1,6 +1,7 @@
 require 'json'
 require 'net/http'
 require 'openssl'
+require 'net-ssh'
 
 
 # Slack tasks
