@@ -8,8 +8,17 @@ namespace :slack do
 
   task :post_info do
     if fetch(:slack_url) and fetch(:slack_room)
-      ssh_fetch_command = %x[ssh #{fetch(:domain)} cat #{fetch(:current_path)}/.mina_git_revision]
-      set(:last_revision, ssh_fetch_command.delete("\n"))
+      if set?(:user)
+        Net::SSH.start( fetch(:domain), fetch(:user)) do |ssh|
+          set(:last_revision, ssh.exec!("cd #{fetch(:deploy_to)}/scm; git log -n 1 --pretty=format:'%H'"))
+        end
+      else
+        login_data = fetch(:domain).split("@")
+        Net::SSH.start( login_data[1], login_data[0]) do |ssh|
+          set(:last_revision, ssh.exec!("cd #{fetch(:deploy_to)}/scm; git log -n 1 --pretty=format:'%H'"))
+        end
+      end
+
       set(:last_commit, %x[git log -n 1 --pretty=format:"%H"])
       changes
       attachment = {
