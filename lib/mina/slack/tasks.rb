@@ -67,6 +67,8 @@ namespace :slack do
     request.set_form_data(:payload => payload.to_json)
 
     http.request(request)
+  rescue Encoding::InvalidByteSequenceError
+    comment "Invalid byte sequence"
   end
 
   def changes
