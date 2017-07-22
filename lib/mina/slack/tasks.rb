@@ -8,6 +8,11 @@ require 'net/ssh'
 namespace :slack do
 
   task :post_info do
+    invoke :'slack:fetch_info'
+    command %{bundle exec mina slack:send_info message='#{fetch(:message)}' slack_url='#{fetch(:slack_url)}'} if fetch(:slack_url) and fetch(:slack_room)
+  end
+
+  task :fetch_info do
     if fetch(:slack_url) and fetch(:slack_room)
       if set?(:user)
         Net::SSH.start( fetch(:domain), fetch(:user)) do |ssh|
@@ -28,10 +33,23 @@ namespace :slack do
         fields: [attachment_project, attachment_enviroment, attachment_deployer, attachment_revision, attachment_changes]
       }
 
-      post_slack_attachment(attachment)
+      message = {
+        "parse"       => "full",
+        "channel"     => fetch(:slack_room),
+        "username"    => fetch(:slack_username),
+        "attachments" => [attachment],
+        "icon_emoji"  => fetch(:slack_emoji)
+      }
+
+      set(:message, message)
     else
       print_status "Unable to create Slack Announcement, no slack details provided."
     end
+  end
+
+  task :send_info do
+    message = eval(ENV['message'])
+    send_slack_message(message, ENV['slack_url'])
   end
 
   def short_revision
@@ -59,22 +77,14 @@ namespace :slack do
     {title: "Changes", value: fetch(:changes), short: false}
   end
 
-  def post_slack_attachment(attachment)
-    uri = URI.parse(fetch(:slack_url))
+  def send_slack_message(message, slack_url)
+    uri = URI.parse(slack_url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-    payload = {
-      "parse"       => "full",
-      "channel"     => fetch(:slack_room),
-      "username"    => fetch(:slack_username),
-      "attachments" => [attachment],
-      "icon_emoji"  => fetch(:slack_emoji)
-    }
-
     request = Net::HTTP::Post.new(uri.request_uri)
-    request.set_form_data(:payload => payload.to_json)
+    request.set_form_data(:payload => message.to_json)
 
     http.request(request)
   rescue Encoding::InvalidByteSequenceError
