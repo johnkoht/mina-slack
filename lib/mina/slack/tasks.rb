@@ -40,7 +40,7 @@ namespace :slack do
   end
 
   def attachment_project
-    {title: "New version of project", value: fetch(:application_name), short: true}
+    {title: "New version of project", value: fetch(:slack_application), short: true}
   end
 
   def attachment_enviroment
@@ -52,7 +52,7 @@ namespace :slack do
   end
 
   def attachment_revision
-    {title: "Revision", value: "#{fetch(:application_name)}: #{fetch(:slack_stage)} #{short_revision}", short: true}
+    {title: "Revision", value: "#{fetch(:slack_application)}: #{fetch(:slack_stage)} #{short_revision}", short: true}
   end
 
   def attachment_changes
