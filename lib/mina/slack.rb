@@ -1,2 +1,6 @@
 require 'mina/slack/defaults'
 require 'mina/slack/tasks'
+require 'json'
+require 'net/http'
+require 'openssl'
+require 'net/ssh'
