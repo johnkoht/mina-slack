@@ -12,7 +12,6 @@ module Mina
         else
           print_stdout line
         end
-        puts 'Invalid byte sequence'
       rescue Encoding::InvalidByteSequenceError
         puts 'Invalid byte sequence'
       end
