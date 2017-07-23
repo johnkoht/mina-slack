@@ -12,20 +12,21 @@ module Mina
         else
           print_stdout line
         end
+        puts 'Invalid byte sequence'
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def print_status(msg)
         puts "#{color('----->', 32)} #{msg}"
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def print_error(msg)
         puts " #{color('!', 33)}     #{color(msg, 31)}"
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def print_stderr(msg)
@@ -35,25 +36,25 @@ module Mina
           puts "       #{color(msg, 31)}"
         end
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def print_command(msg)
         puts "       #{color('$', 36)} #{color(msg, 36)}"
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def print_info(msg)
         puts "       #{color(msg, 96)}"
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def print_stdout(msg)
         puts "       #{msg}"
       rescue Encoding::InvalidByteSequenceError
-        comment 'Invalid byte sequence'
+        puts 'Invalid byte sequence'
       end
 
       def color(str, c)
