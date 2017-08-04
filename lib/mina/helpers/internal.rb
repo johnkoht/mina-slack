@@ -106,8 +106,8 @@ module Mina
       end
 
       def short_revision
-        deployed_revision = fetch(:deployed_revision)
-        deployed_revision[0..7] if deployed_revision
+        deployed_revision = fetch(:last_commit)
+        deployed_revision[0..8] if deployed_revision
       end
 
       def attachment_project
