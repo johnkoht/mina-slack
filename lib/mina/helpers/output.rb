@@ -2,6 +2,7 @@ module Mina
   module Helpers
     module Output
       def print_line(line)
+        line.scrub!
         case line
         when /^\-+> (.*?)$/
           print_status Regexp.last_match[1]
@@ -12,48 +13,40 @@ module Mina
         else
           print_stdout line
         end
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def print_status(msg)
+        msg.scrub!
         puts "#{color('----->', 32)} #{msg}"
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def print_error(msg)
+        msg.scrub!
         puts " #{color('!', 33)}     #{color(msg, 31)}"
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def print_stderr(msg)
+        msg.scrub!
         if msg =~ /I, \[/ # fix for asset precompile
           print_stdout msg
         else
           puts "       #{color(msg, 31)}"
         end
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def print_command(msg)
+        msg.scrub!
         puts "       #{color('$', 36)} #{color(msg, 36)}"
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def print_info(msg)
+        msg.scrub!
         puts "       #{color(msg, 96)}"
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def print_stdout(msg)
+        msg.scrub!
         puts "       #{msg}"
-      rescue Encoding::InvalidByteSequenceError
-        puts 'Invalid byte sequence'
       end
 
       def color(str, c)
