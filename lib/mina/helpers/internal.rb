@@ -137,9 +137,9 @@ module Mina
       def changes
         last_revision = fetch(:last_revision)
         if last_revision.empty?
-          set(:changes, `git --no-pager log --pretty=format:'Commit: %h - %ad%n%an - %s%n' --date=short --abbrev-commit #{fetch(:deployed_revision)} #{fetch(:branch)} --`)
+          set(:changes, `git --no-pager log --pretty=format:'Commit: %h - %ad%n%an - %s%n' --date=short --abbrev-commit #{fetch(:deployed_revision)} origin/#{fetch(:branch)} --`)
         else
-          set(:changes, `git --no-pager log --pretty=format:'Commit: %h - %ad%n%an - %s%n' --date=short --abbrev-commit #{fetch(:last_revision)}...#{fetch(:last_commit)} #{fetch(:branch)} --`)
+          set(:changes, `git --no-pager log --pretty=format:'Commit: %h - %ad%n%an - %s%n' --date=short --abbrev-commit #{fetch(:last_revision)}...#{fetch(:last_commit)} origin/#{fetch(:branch)} --`)
         end
       end
 
