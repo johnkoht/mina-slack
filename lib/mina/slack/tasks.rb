@@ -13,6 +13,9 @@ after_mina :deploy, :'slack:finished'
 namespace :slack do
 
   task :starting do
+    slack_room = fetch(:slack_room)
+    slack_url = fetch(:slack_url)
+
     if slack_url and slack_room
       announcement = "#{announced_deployer} is deploying #{announced_application_name} to #{announced_stage}"
 
@@ -24,6 +27,9 @@ namespace :slack do
   end
 
   task :finished do
+    slack_room = fetch(:slack_room)
+    slack_url = fetch(:slack_url)
+
     if slack_url and slack_room
       end_time = Time.now
       start_time = fetch(:start_time)
@@ -39,18 +45,23 @@ namespace :slack do
 
 
   def announced_stage
-    slack_stage
+    fetch(:slack_stage)
   end
 
   def announced_deployer
-    deployer
+    fetch(:deployer)
   end
 
   def short_revision
+    deployed_revision = fetch(:deployed_revision)
+
     deployed_revision[0..7] if deployed_revision
   end
 
   def announced_application_name
+    slack_application = fetch(:slack_application)
+    branch = fetch(:branch)
+
     "".tap do |output|
       output << slack_application if slack_application
       output << " `#{branch}`" if branch
@@ -59,6 +70,11 @@ namespace :slack do
   end
 
   def post_slack_message(message)
+    slack_emoji = fetch(:slack_emoji)
+    slack_room = fetch(:slack_room)
+    slack_url = fetch(:slack_url)
+    slack_username = fetch(:slack_username)
+
     # Parse the URI and handle the https connection
     uri = URI.parse(slack_url)
     http = Net::HTTP.new(uri.host, uri.port)
