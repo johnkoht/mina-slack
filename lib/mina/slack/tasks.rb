@@ -3,12 +3,6 @@ require 'mina/hooks'
 require 'json'
 require 'net/http'
 
-
-# Before and after hooks for mina deploy
-before_mina :deploy, :'slack:starting'
-after_mina :deploy, :'slack:finished'
-
-
 # Slack tasks
 namespace :slack do
 

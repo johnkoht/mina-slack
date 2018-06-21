@@ -49,6 +49,22 @@ Or use the ENV variables:
     ENV['SLACK_EMOJI'] = ''
     ENV['SLACK_STAGE'] = '' # or ENV['to']
 
+### Add tasks
+Invoke tasks in your deploy.rb
+
+    ```Ruby
+    task deploy do
+      run(:local) { invoke :'slack:starting' }
+      deploy do
+        # [...]
+        on :launch do
+          # [...]
+        end
+      end
+      run(:local) { invoke :'slack:finished' }
+    end
+    ```
+
 ## Contributing
 
 1. Fork it ( http://github.com/<my-github-username>/mina-slack/fork )
